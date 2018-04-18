@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 /**
  * @author Ryan
  */
@@ -47,10 +50,10 @@ public class RouteGuideService extends RouteGuideGrpc.RouteGuideImplBase {
 
     @Override
     public void listFeatures(Rectangle request, StreamObserver<Feature> responseObserver) {
-        int left = Math.min(request.getHi().getLongitude(), request.getLo().getLongitude());
-        int right = Math.max(request.getHi().getLongitude(), request.getLo().getLongitude());
-        int top = Math.max(request.getHi().getLatitude(), request.getLo().getLatitude());
-        int bottom = Math.min(request.getHi().getLatitude(), request.getLo().getLatitude());
+        int left = min(request.getLo().getLongitude(), request.getHi().getLongitude());
+        int right = max(request.getLo().getLongitude(), request.getHi().getLongitude());
+        int top = max(request.getLo().getLatitude(), request.getHi().getLatitude());
+        int bottom = min(request.getLo().getLatitude(), request.getHi().getLatitude());
 
         for (Feature feature : features) {
             if (isValidFeature(feature)) {
@@ -58,7 +61,7 @@ public class RouteGuideService extends RouteGuideGrpc.RouteGuideImplBase {
             }
             int lat = feature.getLocation().getLatitude();
             int lon = feature.getLocation().getLongitude();
-            if (lat >= left && lat <= right && lon <= top && lon >= bottom) {
+            if (lon >= left && lon <= right && lat >= bottom && lat <= top) {
                 responseObserver.onNext(feature);
             }
         }

@@ -47,7 +47,7 @@ public class RouteGuideServer {
 
     public void start() throws IOException {
         server.start();
-        logger.log(Level.INFO, "Something went wrong: {0} ", port);
+        logger.info("Server started, listening on " + port);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
